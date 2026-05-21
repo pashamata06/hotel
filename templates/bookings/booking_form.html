@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% if is_edit %}Редактирование брони{% else %}Создание брони{% endif %}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Сохранить</button>
+    <a href="{% url 'bookings:booking_list' %}" class="btn">Отмена</a>
+</form>
+{% endblock %}

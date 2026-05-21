@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Словарь терминов и понятий</h1>
+
+{% for term in terms %}
+<div style="border-bottom: 1px solid #eee; margin: 15px 0; padding: 10px;">
+    <h3>{{ term.term }}</h3>
+    <p>{{ term.definition }}</p>
+    <small>Добавлено: {{ term.added_at_utc|date:"d/m/Y" }}</small>
+</div>
+{% empty %}
+<p>Терминов пока нет.</p>
+{% endfor %}
+
+<a href="{% url 'bookings:home' %}" class="btn">На главную</a>
+{% endblock %}

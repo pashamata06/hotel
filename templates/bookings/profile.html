@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Личный кабинет</h1>
+<p>Добро пожаловать, {{ user.username }}!</p>
+
+<h2>Ваши брони</h2>
+{% for booking in user_bookings %}
+<div class="room-card">
+    <p>Номер: {{ booking.room.room_number }}</p>
+    <p>Заезд: {{ booking.check_in_date|date:"d/m/Y" }}</p>
+    <p>Выезд: {{ booking.check_out_date|date:"d/m/Y" }}</p>
+    <p>Сумма: {{ booking.total_price }} руб.</p>
+</div>
+{% empty %}
+<p>У вас пока нет броней.</p>
+{% endfor %}
+
+<a href="{% url 'bookings:home' %}" class="btn">На главную</a>
+{% endblock %}

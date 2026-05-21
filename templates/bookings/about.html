@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>О компании</h1>
+
+{% if company %}
+<h2>{{ company.name }}</h2>
+{% if company.founding_year %}
+<p>Год основания: {{ company.founding_year }}</p>
+{% endif %}
+
+<h3>История</h3>
+<p>{{ company.history_text|default:"Информация об истории компании скоро появится..." }}</p>
+
+<h3>Реквизиты</h3>
+<table border="1" cellpadding="10">
+    <tr><th>Юридический адрес</th><td>{{ company.legal_address|default:"-" }}</td></tr>
+    <tr><th>ИНН</th><td>{{ company.inn|default:"-" }}</td></tr>
+    <tr><th>КПП</th><td>{{ company.kpp|default:"-" }}</td></tr>
+    <tr><th>Расчетный счет</th><td>{{ company.bank_account|default:"-" }}</td></tr>
+    <tr><th>Банк</th><td>{{ company.bank_name|default:"-" }}</td></tr>
+    <tr><th>БИК</th><td>{{ company.bik|default:"-" }}</td></tr>
+</table>
+{% else %}
+<p>Информация о компании скоро появится.</p>
+{% endif %}
+
+<a href="{% url 'bookings:home' %}" class="btn">На главную</a>
+{% endblock %}

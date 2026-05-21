@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Удаление брони</h1>
+<p>Вы уверены, что хотите удалить бронь?</p>
+<p><strong>Номер {{ booking.room.room_number }}</strong> с {{ booking.check_in_date|date:"d/m/Y" }} по {{ booking.check_out_date|date:"d/m/Y" }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Да, удалить</button>
+    <a href="{% url 'bookings:booking_list' %}" class="btn">Отмена</a>
+</form>
+{% endblock %}

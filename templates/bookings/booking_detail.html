@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Детали брони</h1>
+
+<div class="room-card">
+    <p><strong>Клиент:</strong> {{ booking.client }}</p>
+    <p><strong>Номер:</strong> {{ booking.room.room_number }} ({{ booking.room.category.name }})</p>
+    <p><strong>Заезд:</strong> {{ booking.check_in_date|date:"d/m/Y" }}</p>
+    <p><strong>Выезд:</strong> {{ booking.check_out_date|date:"d/m/Y" }}</p>
+    <p><strong>Количество ночей:</strong> {{ booking.check_out_date|date:"U"|add:booking.check_in_date|date:"U"|divisibleby:86400 }}</p>
+    <p><strong>Сумма:</strong> {{ booking.total_price }} руб.</p>
+    
+    {% if booking.payment %}
+        <p><strong>Оплата:</strong> {{ booking.payment.amount }} руб. ({{ booking.payment.get_method_display }})</p>
+    {% else %}
+        <p><strong>Оплата:</strong> Не оплачено</p>
+    {% endif %}
+</div>
+
+<a href="{% url 'bookings:booking_list' %}" class="btn">Назад к броням</a>
+<a href="{% url 'bookings:booking_update' booking.id %}" class="btn btn-warning">Редактировать</a>
+<a href="{% url 'bookings:booking_delete' booking.id %}" class="btn btn-danger">Удалить</a>
+{% endblock %}

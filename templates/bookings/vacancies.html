@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Вакансии</h1>
+
+{% for vacancy in vacancies %}
+<div class="vacancy-card">
+    <h2>{{ vacancy.title }}</h2>
+    <p>{{ vacancy.description|truncatewords:50 }}</p>
+    {% if vacancy.salary_min or vacancy.salary_max %}
+        <p>💰 Зарплата: 
+        {% if vacancy.salary_min %}{{ vacancy.salary_min }} руб.{% endif %}
+        {% if vacancy.salary_max %} - {{ vacancy.salary_max }} руб.{% endif %}
+        </p>
+    {% endif %}
+    <small>Добавлено: {{ vacancy.created_at_utc|date:"d/m/Y" }}</small>
+</div>
+{% empty %}
+<p>Активных вакансий нет.</p>
+{% endfor %}
+
+<a href="{% url 'bookings:home' %}" class="btn">На главную</a>
+{% endblock %}

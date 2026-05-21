@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Добро пожаловать в гостиницу "Уют"!</h1>
+<p>Лучшее место для вашего отдыха и командировок.</p>
+
+<!-- БЛОК API 1: ПОГОДА -->
+<div style="background: #e8f4f8; padding: 15px; margin: 20px 0; border-radius: 10px;">
+    <h3>🌤️ Погода в Минске</h3>
+    {% if weather.error %}
+        <p>Данные о погоде временно недоступны</p>
+    {% else %}
+        <p>🌡️ Температура: {{ weather.temperature }}°C</p>
+        <p>💨 Ветер: {{ weather.wind_speed }} м/с</p>
+    {% endif %}
+</div>
+
+<!-- БЛОК API 2: КУРС ВАЛЮТ -->
+<div style="background: #f0f8e8; padding: 15px; margin: 20px 0; border-radius: 10px;">
+    <h3>💰 Курс валют</h3>
+    {% if exchange_rates.error %}
+        <p>Данные о курсе валют временно недоступны</p>
+    {% else %}
+        <p>💵 1 USD ≈ {{ exchange_rates.usd_to_byn }} BYN</p>
+        <p>💶 1 EUR ≈ {{ exchange_rates.eur_to_byn }} BYN</p>
+    {% endif %}
+    <small>* Курс обновляется ежедневно</small>
+</div>
+
+<!-- ГРАФИК НА PYTHON (MATPLOTLIB) -->
+<div style="background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 10px;">
+    <h3>📊 Статистика загрузки гостиницы</h3>
+    {% if booking_chart %}
+        <img src="{{ booking_chart }}" alt="График загрузки номеров" style="width: 100%; max-width: 800px;">
+    {% else %}
+        <p>Данные для графика временно недоступны. Добавьте бронирования.</p>
+    {% endif %}
+</div>
+
+<h2>📰 Последняя новость</h2>
+{% if latest_news %}
+<div class="news-card">
+    <h3>{{ latest_news.title }}</h3>
+    {% if latest_news.image %}
+        <img src="{{ latest_news.image.url }}" alt="{{ latest_news.title }}" width="300">
+    {% endif %}
+    <p>{{ latest_news.short_content }}</p>
+    <p><small>Дата: {{ latest_news.created_at_utc|date:"d/m/Y" }}</small></p>
+    <a href="{% url 'bookings:news_detail' latest_news.id %}" class="btn">Читать далее →</a>
+</div>
+{% else %}
+<p>Новостей пока нет.</p>
+{% endif %}
+
+<h2>🔥 Популярные номера</h2>
+{% for room in popular_rooms %}
+<div class="room-card">
+    <strong>Номер {{ room.room_number }}</strong> - {{ room.category.name }}<br>
+    Цена: {{ room.category.base_price }} руб/ночь
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Контакты</h1>
+
+<h2>Наши сотрудники</h2>
+{% for emp in employees %}
+<div class="employee-card">
+    {% if emp.photo %}
+        <img src="{{ emp.photo.url }}" alt="{{ emp.last_name }}">
+    {% else %}
+        <div style="width:150px;height:150px;background:#ccc;border-radius:50%;margin:0 auto;"></div>
+    {% endif %}
+    <h3>{{ emp.last_name }} {{ emp.first_name }}</h3>
+    <p><strong>{{ emp.get_position_display }}</strong></p>
+    <p>{{ emp.work_description|default:"-" }}</p>
+    <p>📞 {{ emp.phone }}</p>
+    <p>✉️ {{ emp.email }}</p>
+</div>
+{% empty %}
+<p>Сотрудников пока нет.</p>
+{% endfor %}
+
+<h2>Контакты гостиницы</h2>
+<p>📞 Телефон: +375 (29) 123-45-67</p>
+<p>✉️ Email: info@hotel.by</p>
+<p>📍 Адрес: г. Минск, ул. Примерная, 1</p>
+
+<a href="{% url 'bookings:home' %}" class="btn">На главную</a>
+{% endblock %}

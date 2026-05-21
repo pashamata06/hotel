@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ news.title }}</h1>
+
+{% if news.image %}
+    <img src="{{ news.image.url }}" alt="{{ news.title }}" width="100%">
+{% endif %}
+
+<p>{{ news.full_content }}</p>
+
+<small>Дата публикации: {{ news.created_at_utc|date:"d/m/Y H:i" }}</small>
+
+<br><br>
+<a href="{% url 'bookings:news_list' %}" class="btn">← Все новости</a>
+<a href="{% url 'bookings:home' %}" class="btn">На главную</a>
+{% endblock %}

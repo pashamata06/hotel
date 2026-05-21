@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Новости</h1>
+
+<!-- ФОРМА ПОИСКА И СОРТИРОВКИ -->
+<div class="search-form">
+    <form method="get">
+        <input type="text" name="search" placeholder="Поиск по новостям..." value="{{ search_query|default:'' }}">
+        
+        <select name="sort">
+            <option value="-created_at_utc" {% if sort_by == '-created_at_utc' %}selected{% endif %}>Сначала новые</option>
+            <option value="created_at_utc" {% if sort_by == 'created_at_utc' %}selected{% endif %}>Сначала старые</option>
+            <option value="title" {% if sort_by == 'title' %}selected{% endif %}>По заголовку (А-Я)</option>
+            <option value="-title" {% if sort_by == '-title' %}selected{% endif %}>По заголовку (Я-А)</option>
+        </select>
+        
+        <button type="submit" class="btn">Найти</button>
+        <a href="{% url 'bookings:news_list' %}" class="btn">Сбросить</a>
+    </form>
+</div>
+
+{% for news in news_list %}
+<div class="news-card">
+    <h2>{{ news.title }}</h2>
+    {% if news.image %}
+        <img src="{{ news.image.url }}" alt="{{ news.title }}" width="300">
+    {% endif %}
+    <p>{{ news.short_content }}</p>
+    <small>Дата: {{ news.created_at_utc|date:"d/m/Y" }}</small>
+    <br>
+    <a href="{% url 'bookings:news_detail' news.id %}" class="btn">Читать далее →</a>
+</div>
+{% empty %}
+<p>Новостей не найдено.</p>
+{% endfor %}
+
+<a href="{% url 'bookings:home' %}" class="btn">На главную</a>
+{% endblock %}

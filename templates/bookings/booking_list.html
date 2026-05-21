@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Мои брони</h1>
+
+{% if user.is_superuser %}
+    <a href="{% url 'bookings:booking_create' %}" class="btn">+ Создать бронь</a>
+{% endif %}
+
+{% for booking in bookings %}
+<div class="room-card">
+    <p><strong>Номер {{ booking.room.room_number }}</strong> - {{ booking.room.category.name }}</p>
+    <p>Заезд: {{ booking.check_in_date|date:"d/m/Y" }}</p>
+    <p>Выезд: {{ booking.check_out_date|date:"d/m/Y" }}</p>
+    <p>Сумма: {{ booking.total_price }} руб.</p>
+    <p>Статус: {% if booking.payment %}✅ Оплачено{% else %}⏳ Ожидает оплаты{% endif %}</p>
+    
+    <div style="margin-top: 10px;">
+        <a href="{% url 'bookings:booking_detail' booking.id %}" class="btn">Подробнее</a>
+        <a href="{% url 'bookings:booking_update' booking.id %}" class="btn btn-warning">✏️ Редактировать</a>
+        <a href="{% url 'bookings:booking_delete' booking.id %}" class="btn btn-danger" onclick="return confirm('Удалить бронь?')">🗑️ Удалить</a>
+    </div>
+</div>
+{% empty %}
+<p>У вас пока нет броней.</p>
+{% endfor %}
+
+<a href="{% url 'bookings:profile' %}" class="btn">Назад в профиль</a>
+{% endblock %}

@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: hotel_db
+      POSTGRES_USER: hotel_user
+      POSTGRES_PASSWORD: hotel_password
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DB_NAME: hotel_db
+      DB_USER: hotel_user
+      DB_PASSWORD: hotel_password
+      DB_HOST: db
+      DB_PORT: 5432
+      DEBUG: '0'
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
