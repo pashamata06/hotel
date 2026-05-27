@@ -3,7 +3,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-fake-key-for-lab5'
+SECRET_KEY = 'django-insecure-lab5-hotel-project-key'
 
 DEBUG = True
 
@@ -70,22 +70,25 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ========== ЛОГИРОВАНИЕ ==========
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Создаём папку для логов
+os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {asctime} {message}',
+            'format': '{levelname} {asctime} {module} {message}',
             'style': '{',
         },
     },
@@ -99,49 +102,12 @@ LOGGING = {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'error_file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs/errors.log',
-            'formatter': 'verbose',
         },
     },
     'loggers': {
         'bookings': {
-            'handlers': ['file', 'console', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django': {
             'handlers': ['file', 'console'],
-            'level': 'INFO',
-            'propagate': True,
+            'level': 'DEBUG',
         },
     },
 }
-
-# Создаем папку для логов
-os.makedirs(BASE_DIR / 'logs', exist_ok=True)
-
-# PostgreSQL для продакшена
-import os
-if os.environ.get('DEBUG') == '0':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'hotel_db'),
-            'USER': os.environ.get('DB_USER', 'hotel_user'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'hotel_password'),
-            'HOST': os.environ.get('DB_HOST', 'db'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
-        }
-    }
-    DEBUG = False
-    ALLOWED_HOSTS = ['*']
-
-# Перенаправление после входа
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
