@@ -3,8 +3,8 @@ __pycache__/
 *.pyc
 db.sqlite3
 /media/
-/static/
-logs/
+/staticfiles/
+/logs/
 *.log
-.env
 .DS_Store
+.env
