@@ -140,3 +140,8 @@ if os.environ.get('DEBUG') == '0':
     }
     DEBUG = False
     ALLOWED_HOSTS = ['*']
+
+# Перенаправление после входа
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
