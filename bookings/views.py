@@ -407,3 +407,17 @@ def register(request):
     context = base_context(request)
     context['form'] = form
     return render(request, 'registration/register.html', context)
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            logger.info(f"New user registered: {user.username}")
+            messages.success(request, 'Регистрация успешна! Теперь вы можете войти.')
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    context = base_context(request)
+    context['form'] = form
+    return render(request, 'registration/register.html', context)

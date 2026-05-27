@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Промокоды и купоны</h1>
 
-<h2>🎁 Действующие</h2>
+<h2> Действующие</h2>
 {% for promo in active_promocodes %}
 <div class="promo-active" style="padding: 10px; margin: 10px 0; border-radius: 5px;">
     <strong>Код: {{ promo.code }}</strong>
@@ -15,7 +15,7 @@
 <p>Действующих промокодов нет.</p>
 {% endfor %}
 
-<h2>📦 Архив</h2>
+<h2> Архив</h2>
 {% for promo in archive_promocodes %}
 <div class="promo-archive" style="padding: 10px; margin: 10px 0; border-radius: 5px; opacity: 0.7;">
     <strong>Код: {{ promo.code }}</strong>

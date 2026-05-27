@@ -6,23 +6,23 @@
 
 <!-- БЛОК API 1: ПОГОДА -->
 <div style="background: #e8f4f8; padding: 15px; margin: 20px 0; border-radius: 10px;">
-    <h3>🌤️ Погода в Минске</h3>
+    <h3> Погода в Минске</h3>
     {% if weather.error %}
         <p>Данные о погоде временно недоступны</p>
     {% else %}
-        <p>🌡️ Температура: {{ weather.temperature }}°C</p>
-        <p>💨 Ветер: {{ weather.wind_speed }} м/с</p>
+        <p> Температура: {{ weather.temperature }}°C</p>
+        <p> Ветер: {{ weather.wind_speed }} м/с</p>
     {% endif %}
 </div>
 
 <!-- БЛОК API 2: КУРС ВАЛЮТ -->
 <div style="background: #f0f8e8; padding: 15px; margin: 20px 0; border-radius: 10px;">
-    <h3>💰 Курс валют</h3>
+    <h3> Курс валют</h3>
     {% if exchange_rates.error %}
         <p>Данные о курсе валют временно недоступны</p>
     {% else %}
-        <p>💵 1 USD ≈ {{ exchange_rates.usd_to_byn }} BYN</p>
-        <p>💶 1 EUR ≈ {{ exchange_rates.eur_to_byn }} BYN</p>
+        <p> 1 USD ≈ {{ exchange_rates.usd_to_byn }} BYN</p>
+        <p> 1 EUR ≈ {{ exchange_rates.eur_to_byn }} BYN</p>
     {% endif %}
     <small>* Курс обновляется ежедневно</small>
 </div>
@@ -37,7 +37,7 @@
     {% endif %}
 </div>
 
-<h2>📰 Последняя новость</h2>
+<h2> Последняя новость</h2>
 {% if latest_news %}
 <div class="news-card">
     <h3>{{ latest_news.title }}</h3>
@@ -52,7 +52,7 @@
 <p>Новостей пока нет.</p>
 {% endif %}
 
-<h2>🔥 Популярные номера</h2>
+<h2> Популярные номера</h2>
 {% for room in popular_rooms %}
 <div class="room-card">
     <strong>Номер {{ room.room_number }}</strong> - {{ room.category.name }}<br>
