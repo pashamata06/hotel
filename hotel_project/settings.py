@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-lab5-hotel-project-key'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -80,7 +80,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Создаём папку для логов
+# CSRF и безопасность для Render
+CSRF_TRUSTED_ORIGINS = [
+    'https://hotel-final3.onrender.com',
+    'https://*.onrender.com',
+]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_USE_SESSIONS = True
+
+# Логирование
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
 
 LOGGING = {
@@ -111,14 +123,3 @@ LOGGING = {
         },
     },
 }
-
-# Настройки для Render (HTTPS)
-CSRF_TRUSTED_ORIGINS = [
-    'https://hotel-final3.onrender.com',
-    'https://*.onrender.com',
-]
-
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SAMESITE = 'Lax'
