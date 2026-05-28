@@ -35,7 +35,7 @@ def get_user_timezone(request):
 def get_calendar():
     now = datetime.now()
     cal = calendar.monthcalendar(now.year, now.month)
-    html = '<table class="calendar"><tr><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr>'
+    html = '<table class="calendar"><td><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr>'
     for week in cal:
         html += '<tr>'
         for day in week:
@@ -58,25 +58,20 @@ def base_context(request):
     }
 
 def get_weather():
-    """API 1: Погода - open-meteo.com"""
     try:
         url = "https://api.open-meteo.com/v1/forecast?latitude=53.9&longitude=27.5667&current_weather=true"
         with urllib.request.urlopen(url, timeout=5) as response:
             data = json.loads(response.read().decode())
             weather = data.get('current_weather', {})
-            logger.info(f"Weather API: temperature {weather.get('temperature')}")
             return {
                 'temperature': weather.get('temperature', 'Н/Д'),
                 'wind_speed': weather.get('windspeed', 'Н/Д'),
             }
-    except Exception as e:
-        logger.error(f"Weather API error: {e}")
+    except:
         return {'temperature': 'Н/Д', 'wind_speed': 'Н/Д', 'error': True}
 
 def get_exchange_rate():
-    """API 2: Курсы валют - НБРБ + запасной вариант"""
     try:
-        # Основной API: Национальный банк Беларуси
         url = "https://api.nbrb.by/exrates/rates?periodicity=0"
         with urllib.request.urlopen(url, timeout=5) as response:
             data = json.loads(response.read().decode())
@@ -87,30 +82,12 @@ def get_exchange_rate():
                     usd_rate = item.get('Cur_OfficialRate', 3.20)
                 if item.get('Cur_Abbreviation') == 'EUR':
                     eur_rate = item.get('Cur_OfficialRate', 3.10)
-            logger.info(f"Exchange API (NBRB): USD={usd_rate}, EUR={eur_rate}")
             return {
                 'usd_to_byn': round(usd_rate, 2),
                 'eur_to_byn': round(eur_rate, 2)
             }
-    except Exception as e:
-        logger.error(f"Exchange API error (NBRB): {e}")
-        # Запасной API
-        try:
-            url2 = "https://api.exchangerate-api.com/v4/latest/USD"
-            with urllib.request.urlopen(url2, timeout=5) as response:
-                data = json.loads(response.read().decode())
-                rates = data.get('rates', {})
-                usd_rate = rates.get('BYN', 3.20)
-                eur_usd = rates.get('EUR', 1.05)
-                eur_rate = usd_rate / eur_usd
-                logger.info(f"Exchange API (backup): USD={usd_rate}, EUR={eur_rate}")
-                return {
-                    'usd_to_byn': round(usd_rate, 2),
-                    'eur_to_byn': round(eur_rate, 2)
-                }
-        except Exception as e2:
-            logger.error(f"Exchange API error (backup): {e2}")
-            return {'usd_to_byn': 3.20, 'eur_to_byn': 3.10, 'error': True}
+    except:
+        return {'usd_to_byn': 3.20, 'eur_to_byn': 3.10, 'error': True}
 
 def get_booking_chart():
     try:
@@ -148,7 +125,7 @@ def get_booking_chart():
                 plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5, 
                         str(count), ha='center', va='bottom', fontsize=10)
         
-        plt.title('Загрузка гостиницы по месяцам (май-сентябрь 2026)', fontsize=14, fontweight='bold')
+        plt.title('Загрузка гостиницы по месяцам', fontsize=14, fontweight='bold')
         plt.xlabel('Месяц', fontsize=12)
         plt.ylabel('Количество броней', fontsize=12)
         plt.tight_layout()
@@ -161,7 +138,7 @@ def get_booking_chart():
         
         return f'data:image/png;base64,{image_base64}'
     except Exception as e:
-        logger.error(f"Chart error: {e}")
+        logger.error(f"Ошибка графика: {e}")
         return None
 
 @api_login_required
@@ -282,7 +259,7 @@ def review_create(request):
                 text=text,
                 is_moderated=True
             )
-            logger.info(f"New review from {name}, rating {rating}")
+            logger.info(f"Новый отзыв от {name}, оценка {rating}")
             messages.success(request, 'Спасибо за отзыв!')
             return redirect('bookings:reviews')
     context = base_context(request)
@@ -291,6 +268,11 @@ def review_create(request):
 @login_required
 def review_update(request, pk):
     review = get_object_or_404(Review, pk=pk)
+    # Только автор или админ может редактировать
+    if review.user != request.user and not request.user.is_superuser:
+        messages.error(request, 'Вы можете редактировать только свои отзывы')
+        return redirect('bookings:reviews')
+    
     if request.method == 'POST':
         from .forms import ReviewForm
         form = ReviewForm(request.POST, instance=review)
@@ -301,6 +283,7 @@ def review_update(request, pk):
     else:
         from .forms import ReviewForm
         form = ReviewForm(instance=review)
+    
     context = base_context(request)
     context['form'] = form
     context['review'] = review
@@ -310,10 +293,16 @@ def review_update(request, pk):
 @login_required
 def review_delete(request, pk):
     review = get_object_or_404(Review, pk=pk)
+    # Только автор или админ может удалить
+    if review.user != request.user and not request.user.is_superuser:
+        messages.error(request, 'Вы можете удалять только свои отзывы')
+        return redirect('bookings:reviews')
+    
     if request.method == 'POST':
         review.delete()
         messages.success(request, 'Отзыв удалён!')
         return redirect('bookings:reviews')
+    
     context = base_context(request)
     context['review'] = review
     return render(request, 'bookings/review_confirm_delete.html', context)
@@ -329,8 +318,12 @@ def booking_list(request):
 
 @login_required
 def booking_detail(request, pk):
-    context = base_context(request)
     booking = get_object_or_404(Booking, pk=pk)
+    # Проверка доступа: админ или владелец
+    if not request.user.is_superuser and booking.client.email != request.user.email:
+        messages.error(request, 'У вас нет доступа к этой брони')
+        return redirect('bookings:booking_list')
+    context = base_context(request)
     context['booking'] = booking
     return render(request, 'bookings/booking_detail.html', context)
 
@@ -346,6 +339,7 @@ def booking_create(request):
     else:
         from .forms import BookingForm
         form = BookingForm()
+    
     context = base_context(request)
     context['form'] = form
     context['is_edit'] = False
@@ -354,6 +348,11 @@ def booking_create(request):
 @login_required
 def booking_update(request, pk):
     booking = get_object_or_404(Booking, pk=pk)
+    # Проверка доступа: админ или владелец
+    if not request.user.is_superuser and booking.client.email != request.user.email:
+        messages.error(request, 'Вы можете редактировать только свои брони')
+        return redirect('bookings:booking_list')
+    
     if request.method == 'POST':
         from .forms import BookingForm
         form = BookingForm(request.POST, instance=booking)
@@ -364,6 +363,7 @@ def booking_update(request, pk):
     else:
         from .forms import BookingForm
         form = BookingForm(instance=booking)
+    
     context = base_context(request)
     context['form'] = form
     context['booking'] = booking
@@ -373,10 +373,16 @@ def booking_update(request, pk):
 @login_required
 def booking_delete(request, pk):
     booking = get_object_or_404(Booking, pk=pk)
+    # Проверка доступа: админ или владелец
+    if not request.user.is_superuser and booking.client.email != request.user.email:
+        messages.error(request, 'Вы можете удалять только свои брони')
+        return redirect('bookings:booking_list')
+    
     if request.method == 'POST':
         booking.delete()
         messages.success(request, 'Бронь удалена!')
         return redirect('bookings:booking_list')
+    
     context = base_context(request)
     context['booking'] = booking
     return render(request, 'bookings/booking_confirm_delete.html', context)
@@ -399,21 +405,6 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            logger.info(f"New user registered: {user.username}")
-            messages.success(request, 'Регистрация успешна! Теперь вы можете войти.')
-            return redirect('login')
-    else:
-        form = UserCreationForm()
-    context = base_context(request)
-    context['form'] = form
-    return render(request, 'registration/register.html', context)
-
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            logger.info(f"New user registered: {user.username}")
             messages.success(request, 'Регистрация успешна! Теперь вы можете войти.')
             return redirect('login')
     else:
