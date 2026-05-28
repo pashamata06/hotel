@@ -80,19 +80,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# CSRF и безопасность для Render
+# ========== КЛЮЧЕВЫЕ НАСТРОЙКИ ДЛЯ RENDER ==========
 CSRF_TRUSTED_ORIGINS = [
     'https://hotel-final3.onrender.com',
     'https://*.onrender.com',
 ]
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SAMESITE = 'None'
-CSRF_USE_SESSIONS = True
+# Отключаем защиту для HTTPS (на бесплатном Render нет HTTPS)
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
-# Логирование
+# Разрешаем отправку CSRF через любые протоколы
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = False
+
+# Создаём папку для логов
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
 
 LOGGING = {
